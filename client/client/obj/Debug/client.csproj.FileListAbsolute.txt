@@ -7,3 +7,12 @@ c:\users\zeynep\documents\visual studio 2015\Projects\client\client\obj\Debug\cl
 c:\users\zeynep\documents\visual studio 2015\Projects\client\client\obj\Debug\client.csproj.GenerateResource.Cache
 c:\users\zeynep\documents\visual studio 2015\Projects\client\client\obj\Debug\client.exe
 c:\users\zeynep\documents\visual studio 2015\Projects\client\client\obj\Debug\client.pdb
+C:\Users\Zeynep\Desktop\cs408_proje\client\client\bin\Debug\client.exe.config
+C:\Users\Zeynep\Desktop\cs408_proje\client\client\obj\Debug\client.exe
+C:\Users\Zeynep\Desktop\cs408_proje\client\client\obj\Debug\client.pdb
+C:\Users\Zeynep\Desktop\cs408_proje\client\client\bin\Debug\client.exe
+C:\Users\Zeynep\Desktop\cs408_proje\client\client\bin\Debug\client.pdb
+C:\Users\Zeynep\Desktop\cs408_proje\client\client\obj\Debug\client.csprojResolveAssemblyReference.cache
+C:\Users\Zeynep\Desktop\cs408_proje\client\client\obj\Debug\client.Form1.resources
+C:\Users\Zeynep\Desktop\cs408_proje\client\client\obj\Debug\client.Properties.Resources.resources
+C:\Users\Zeynep\Desktop\cs408_proje\client\client\obj\Debug\client.csproj.GenerateResource.Cache

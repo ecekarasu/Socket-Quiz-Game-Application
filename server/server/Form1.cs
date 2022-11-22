@@ -22,6 +22,7 @@ namespace server
 
         bool terminating = false;
         bool listening = false;
+        
 
         public Form1()
         {
@@ -34,25 +35,43 @@ namespace server
         {
             int serverPort;
 
-            if (Int32.TryParse(textBox_port.Text, out serverPort))
+            if (Int32.TryParse(textBox_port.Text, out serverPort)) // if we can parse the input port number
             {
-                IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, serverPort);
-                serverSocket.Bind(endPoint);
-                serverSocket.Listen(3);
+                if (serverPort <= 65535 && serverPort >= 0)
+                {
+                    try
+                    {
+                        IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, serverPort);
+                        serverSocket.Bind(endPoint);
+                        serverSocket.Listen(300);
+                    }
+                    catch (Exception ex)
+                    {
+                        richTextBox_info.AppendText("Fail: " + ex.ToString() + "\n");
+                        richTextBox_info.ScrollToCaret();
+                    }
 
-                listening = true;
-                button_listen.Enabled = false;
-                //textBox_message.Enabled = true;
-                //button_send.Enabled = true;
+                    listening = true;
+                    button_listen.Enabled = false;
+                    button_listen.Text = "Listening";
+                    button_listen.BackColor = Color.Green;
 
-                Thread acceptThread = new Thread(Accept);
-                acceptThread.Start();
+                    Thread acceptThread = new Thread(Accept);
+                    acceptThread.Start();
 
-                richTextBox_info.AppendText("Started listening on port: " + serverPort + "\n");
+                    richTextBox_info.AppendText("Started listening on port: " + serverPort + "\n");
+                    richTextBox_info.ScrollToCaret();
+                }
+                else
+                {
+                    richTextBox_info.AppendText("Port number should be between 0 and 65535\n");
+                    richTextBox_info.ScrollToCaret();
+                }
             }
             else
             {
                 richTextBox_info.AppendText("Please check port number \n");
+                richTextBox_info.ScrollToCaret();
             }
         }
         private void Accept()
@@ -65,37 +84,27 @@ namespace server
                     Socket newClient = serverSocket.Accept(); // first we accept the new connection request
                     if (checkClient(newClient, ref name))
                     { // gets the name and check if name is registered
-                        if (!clientSocketDict.ContainsKey(name)) // checks if the user already connected
+                        send_message(newClient, "authorized\n");
+                        clientSocketDict.Add(name, newClient);
+                        connectedUsers.Add(name);
+                        richTextBox_info.AppendText(name + " is connected.\n");
+                        richTextBox_info.ScrollToCaret();
+                        foreach (string clientName in connectedUsers)
                         {
-                            send_message(newClient, "authorized\n");
-                            clientSocketDict.Add(name, newClient);
-                            connectedUsers.Add(name);
-                            richTextBox_info.AppendText(name + " is connected.\n");
-                            richTextBox_info.ScrollToCaret();
-                            foreach (string clientName in connectedUsers)
+                            if (clientName != name) // do not send it to sender client
                             {
-                                if (clientName != name) // do not send it to sender client
-                                {
-                                    Socket tempSocket = clientSocketDict[clientName]; // we got the socket
-                                    send_message(tempSocket, (name + " is connected\n"));
-                                }
+                                Socket tempSocket = clientSocketDict[clientName]; // we got the socket
+                                send_message(tempSocket, (name + " is connected\n"));
                             }
-                            Thread receiveThread = new Thread(Receive);
-                            receiveThread.Start();
                         }
-                        else
-                        {
-                            richTextBox_info.AppendText(name + " is trying to connect again\n");
-                            richTextBox_info.ScrollToCaret();
-                            send_message(newClient, "already connected");
-                            newClient.Close();
-                        }
+                        Thread receiveThread = new Thread(Receive);
+                        receiveThread.Start();
                     }
                     else
                     {
-                        richTextBox_info.AppendText(name + " is trying to connect but not registered\n");
+                        richTextBox_info.AppendText(name + " is trying to connect again\n");
                         richTextBox_info.ScrollToCaret();
-                        send_message(newClient, "not authorized");
+                        send_message(newClient, "already connected");
                         newClient.Close();
                     }
                 }
@@ -110,16 +119,15 @@ namespace server
                         richTextBox_info.AppendText("The socket stopped working.\n");
                         richTextBox_info.ScrollToCaret();
                     }
-
                 }
             }
         }
-        private bool checkClient(Socket thisClient, ref string name) // gets the name of user and returns that users registiration status
+        private bool checkClient(Socket thisClient, ref string name) 
         {
             try
             {
                 string incomingName = receiveOneMessage(thisClient); // get the name
-                if (connectedUsers.Contains(incomingName)) // check if name is registered
+                if (!connectedUsers.Contains(incomingName)) 
                 {
                     name = incomingName;
                     return true;
@@ -154,6 +162,7 @@ namespace server
         private void Receive() // updated
         {
             bool connected = true;
+            bool flag = false;
             string name = connectedUsers[connectedUsers.Count() - 1]; // we got the username
             Socket thisClient = clientSocketDict[name]; // we got the socket that related to the username
 
@@ -161,23 +170,41 @@ namespace server
             {
                 try
                 {
-                    Byte[] buffer = new Byte[64];
-                    thisClient.Receive(buffer);
-
-                    string incomingName = Encoding.Default.GetString(buffer);
-                    incomingName = incomingName.Substring(0, incomingName.IndexOf("\0"));
-                    richTextBox_info.AppendText("Client: " + incomingName + "\n");
+                    string incomingMessage = receiveOneMessage(thisClient); // if there are any messages we take it
+                    richTextBox_info.AppendText(name + " " + incomingMessage);
                 }
                 catch
                 {
-                    if (!terminating)
+                    flag = true;
+                    foreach (string clientName in connectedUsers)
                     {
-                        richTextBox_info.AppendText("A client has disconnected\n");
+                        if (clientName != name) // check for to don't send it to sender client
+                        {
+                            Socket tempSocket = clientSocketDict[clientName]; // we got the socket
+                            send_message(tempSocket, (name + " has disconnected\n"));
+                        }
                     }
+                    richTextBox_info.AppendText(name + " has disconnected\n");
+                    richTextBox_info.ScrollToCaret();
                     thisClient.Close();
+                    connectedUsers.Remove(name);
                     clientSocketDict.Remove(name);
                     connected = false;
                 }
+            }
+            if (!connected && !flag)
+            {
+                foreach (string clientName in connectedUsers)
+                {
+                    if (clientName != name) // check for to don't send it to sender client
+                    {
+                        Socket tempSocket = clientSocketDict[clientName]; // we got the socket
+                        send_message(tempSocket, (name + " has disconnected\n"));
+                    }
+                }
+                thisClient.Close();
+                connectedUsers.Remove(name);
+                clientSocketDict.Remove(name);
             }
         }
         private void Form1_FormClosing(object sender, System.ComponentModel.CancelEventArgs e)
