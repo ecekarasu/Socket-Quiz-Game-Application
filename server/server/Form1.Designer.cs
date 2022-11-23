@@ -99,7 +99,7 @@
             // 
             this.button_listen.Location = new System.Drawing.Point(341, 38);
             this.button_listen.Name = "button_listen";
-            this.button_listen.Size = new System.Drawing.Size(75, 37);
+            this.button_listen.Size = new System.Drawing.Size(117, 37);
             this.button_listen.TabIndex = 9;
             this.button_listen.Text = "listen";
             this.button_listen.UseVisualStyleBackColor = true;

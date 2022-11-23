@@ -82,7 +82,7 @@ namespace server
                 {
                     string name = ""; // we initialize name to empty string
                     Socket newClient = serverSocket.Accept(); // first we accept the new connection request
-                    if (checkClient(newClient, ref name))
+                    if (checkClient(newClient, ref name) && clientSocketDict.Count < 2)
                     { // gets the name and check if name is registered
                         send_message(newClient, "authorized\n");
                         clientSocketDict.Add(name, newClient);
@@ -102,10 +102,20 @@ namespace server
                     }
                     else
                     {
-                        richTextBox_info.AppendText(name + " is trying to connect again\n");
-                        richTextBox_info.ScrollToCaret();
-                        send_message(newClient, "already connected");
-                        newClient.Close();
+                        if (clientSocketDict.Count == 2)
+                        {
+                            richTextBox_info.AppendText(name + " is trying to connect but maximum number of clients is reached\n");
+                            richTextBox_info.ScrollToCaret();
+                            send_message(newClient, "maximum reached");
+                            newClient.Close();
+                        }
+                        else
+                        {
+                            richTextBox_info.AppendText(name + " is trying to connect again\n");
+                            richTextBox_info.ScrollToCaret();
+                            send_message(newClient, "already connected");
+                            newClient.Close();
+                        }
                     }
                 }
                 catch
@@ -171,7 +181,7 @@ namespace server
                 try
                 {
                     string incomingMessage = receiveOneMessage(thisClient); // if there are any messages we take it
-                    richTextBox_info.AppendText(name + " " + incomingMessage);
+                    richTextBox_info.AppendText(name + " " + incomingMessage + "\n");
                 }
                 catch
                 {

@@ -36,11 +36,14 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.textBox_answer = new System.Windows.Forms.TextBox();
+            this.button_submit = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textBox_ip
             // 
-            this.textBox_ip.Location = new System.Drawing.Point(176, 26);
+            this.textBox_ip.Location = new System.Drawing.Point(106, 20);
             this.textBox_ip.Name = "textBox_ip";
             this.textBox_ip.Size = new System.Drawing.Size(100, 26);
             this.textBox_ip.TabIndex = 0;
@@ -48,30 +51,30 @@
             // 
             // textBox_port
             // 
-            this.textBox_port.Location = new System.Drawing.Point(176, 58);
+            this.textBox_port.Location = new System.Drawing.Point(106, 55);
             this.textBox_port.Name = "textBox_port";
             this.textBox_port.Size = new System.Drawing.Size(100, 26);
             this.textBox_port.TabIndex = 1;
             // 
             // textBox_name
             // 
-            this.textBox_name.Location = new System.Drawing.Point(176, 90);
+            this.textBox_name.Location = new System.Drawing.Point(106, 90);
             this.textBox_name.Name = "textBox_name";
             this.textBox_name.Size = new System.Drawing.Size(100, 26);
             this.textBox_name.TabIndex = 3;
             // 
             // logs
             // 
-            this.logs.Location = new System.Drawing.Point(296, 69);
+            this.logs.Location = new System.Drawing.Point(36, 189);
             this.logs.Name = "logs";
-            this.logs.Size = new System.Drawing.Size(213, 163);
+            this.logs.Size = new System.Drawing.Size(294, 206);
             this.logs.TabIndex = 4;
             this.logs.Text = "";
             // 
             // button_connect
             // 
             this.button_connect.AccessibleName = "";
-            this.button_connect.Location = new System.Drawing.Point(296, 26);
+            this.button_connect.Location = new System.Drawing.Point(230, 18);
             this.button_connect.Name = "button_connect";
             this.button_connect.Size = new System.Drawing.Size(100, 37);
             this.button_connect.TabIndex = 5;
@@ -82,7 +85,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(108, 29);
+            this.label1.Location = new System.Drawing.Point(32, 26);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(28, 20);
             this.label1.TabIndex = 6;
@@ -91,7 +94,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(108, 61);
+            this.label2.Location = new System.Drawing.Point(32, 61);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(41, 20);
             this.label2.TabIndex = 7;
@@ -100,17 +103,46 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(108, 96);
+            this.label3.Location = new System.Drawing.Point(32, 96);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(53, 20);
             this.label3.TabIndex = 8;
             this.label3.Text = "name:";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(32, 134);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(64, 20);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "answer:";
+            // 
+            // textBox_answer
+            // 
+            this.textBox_answer.Location = new System.Drawing.Point(106, 128);
+            this.textBox_answer.Name = "textBox_answer";
+            this.textBox_answer.Size = new System.Drawing.Size(100, 26);
+            this.textBox_answer.TabIndex = 10;
+            // 
+            // button_submit
+            // 
+            this.button_submit.Location = new System.Drawing.Point(230, 123);
+            this.button_submit.Name = "button_submit";
+            this.button_submit.Size = new System.Drawing.Size(100, 37);
+            this.button_submit.TabIndex = 11;
+            this.button_submit.Text = "submit";
+            this.button_submit.UseVisualStyleBackColor = true;
+            this.button_submit.Click += new System.EventHandler(this.button_submit_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(535, 244);
+            this.ClientSize = new System.Drawing.Size(377, 407);
+            this.Controls.Add(this.button_submit);
+            this.Controls.Add(this.textBox_answer);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -136,6 +168,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox textBox_answer;
+        private System.Windows.Forms.Button button_submit;
     }
 }
 
