@@ -120,27 +120,20 @@ namespace client
                 try
                 {
                     string incomingMessage = receiveOneMessage();
-                    logs.AppendText("Server: " + incomingMessage);
+                    logs.AppendText(incomingMessage);
                 }
                 catch
                 {
                     if (!terminating)
                     {
                         logs.AppendText("The server has disconnected\n");
-                        logs.ScrollToCaret();
+                        logs.ScrollToCaret(); 
                     }
                     clientSocket.Close();
                     connected = false;
                 }
             }
         }
-        private void Form1_FormClosing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            connected = false;
-            terminating = true;
-            Environment.Exit(0);
-        }
-
         private void button_submit_Click(object sender, EventArgs e)
         {
             string answer = textBox_answer.Text;
@@ -157,6 +150,12 @@ namespace client
                 logs.AppendText("Message length must between 1 and 10m\n");
                 logs.ScrollToCaret();
             }
+        }
+        private void Form1_FormClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            connected = false;
+            terminating = true;
+            Environment.Exit(0);
         }
     }
 }
