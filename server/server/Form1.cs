@@ -19,8 +19,8 @@ namespace server
         Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         List<string> connectedUsers = new List<string>(); // keeps the names of connected users
         Dictionary<string, Socket> clientSocketDict = new Dictionary<string, Socket>(); // keeps name -> client tuples
-        List<string> questions = new List<string>() {"q1", "q2", "q3"}; // DUMMY
-        List<int> answers = new List<int>() {1, 2, 3}; // DUMMY
+        List<string> questions = new List<string>()
+        List<int> answers = new List<int>()
 
         bool terminating = false;
         bool listening = false;
