@@ -28,7 +28,8 @@ namespace server
         bool isGameFinished = false;
         int numOfQuestions = 0;
         int numAnswers = 0;
-        bool isQuestionAsked = false; 
+        bool isQuestionAsked = false;
+        string filename = "questions.txt"; 
         public Form1()
         {
             Control.CheckForIllegalCrossThreadCalls = false;
@@ -66,6 +67,24 @@ namespace server
 
                     richTextBox_info.AppendText("Started listening on port: " + serverPort + "\n");
                     richTextBox_info.ScrollToCaret();
+                    string givenFilename = textBox_file.Text;
+                    if (givenFilename == filename)
+                    {
+                        string[] lines = File.ReadAllLines(filename, Encoding.UTF8);
+                        for (int i = 0; i < lines.Length; i++)
+                        {
+                            if (i % 2 == 0)
+                            {
+                                questions.Add(lines[i]);
+                            }
+                            else
+                            {
+                                answers.Add(Int32.Parse(lines[i]));
+
+                            }
+                        }
+
+                    }
                     Int32.TryParse(textBox_num.Text, out numOfQuestions); // we got the number of questions as input
                 }
                 else
@@ -154,6 +173,8 @@ namespace server
             string name = connectedUsers[clientSocketDict.Count - 1]; // we got the username
             Socket thisClient = clientSocketDict[name]; // we got the socket that related to the username
             int numOfQuestionsAsked = 0;
+            double scorePlayer1 = 0;
+            double scorePlayer2 = 0;
 
             while (connected && !terminating) 
             {
@@ -161,6 +182,13 @@ namespace server
                 {
                     if (numOfQuestionsAsked == numOfQuestions)
                     {
+                        send_message(clientSocketDict[clientName],"Game is over! Congratulations... Final scores:\n");
+                        if(scorePlayer1 < scorePlayer2){
+                            send_message(clientSocketDict[clientName],"Player 2: " + scorePlayer2 + "\n Player 1:" + scorePlayer1 + "\n");
+                        }
+                        else{
+                             send_message(clientSocketDict[clientName],"Player 1: " + scorePlayer1 + "\n Player 2:" + scorePlayer2 + "\n");
+                        }
                         isGameFinished = true; 
                     }
                     else {
@@ -176,12 +204,39 @@ namespace server
                     try 
                     {
                         string incomingMessage = receiveOneMessage(thisClient); // if there are any messages we take them
+                        List<int> clientsAnswers = new List<int>();
+                        clientsAnswers.Add(Int32.Parse(incomingMessage));
                         richTextBox_info.AppendText(name + ": " + incomingMessage + "\n");
                         if (isGameStarted)
                         {
                             numAnswers += 1;
                             if (numAnswers == clientSocketDict.Count)
                             {
+                                int correctAnswer = answers[numOfQuestionsAsked];
+                                int diffAnswer1 = Math.Abs(correctAnswer - clientsAnswers[0]);
+                                int diffAnswer2 = Math.Abs(correctAnswer - clientsAnswers[1]);
+                                if (diffAnswer1 < diffAnswer2)
+                                {
+                                    scorePlayer1++;
+                                }
+                                else if (diffAnswer2 < diffAnswer1)
+                                {
+                                    scorePlayer2++;
+                                }
+                                else
+                                {
+                                    scorePlayer1 += 0.5;
+                                    scorePlayer2 += 0.5;
+                                }
+                                send_message(thisClient, "The answer is: " + correctAnswer + "\n" + "Scores: \n");
+                                if (scorePlayer1 < scorePlayer2)
+                                {
+                                    send_message(thisClient, "Player 2: " + scorePlayer2 + "\n" + "Player 1: " + scorePlayer1 + "\n");
+                                }
+                                else
+                                {
+                                    send_message(thisClient, "Player 1: " + scorePlayer1 + "\n" + "Player 2: " + scorePlayer2 + "\n");
+                                }
                                 isQuestionAsked = false;
                                 numAnswers = 0;
                                 numOfQuestionsAsked += 1; 
