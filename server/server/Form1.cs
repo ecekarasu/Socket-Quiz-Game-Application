@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace server
 {
@@ -19,8 +20,8 @@ namespace server
         Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         List<string> connectedUsers = new List<string>(); // keeps the names of connected users
         Dictionary<string, Socket> clientSocketDict = new Dictionary<string, Socket>(); // keeps name -> client tuples
-        List<string> questions = new List<string>() {"q1", "q2", "q3"}; // DUMMY
-        List<int> answers = new List<int>() {1, 2, 3}; // DUMMY
+        List<string> questions = new List<string>();
+        List<int> answers = new List<int>();
 
         bool terminating = false;
         bool listening = false;
@@ -28,7 +29,8 @@ namespace server
         bool isGameFinished = false;
         int numOfQuestions = 0;
         int numAnswers = 0;
-        bool isQuestionAsked = false; 
+        bool isQuestionAsked = false;
+        string filename = "questions.txt"; 
         public Form1()
         {
             Control.CheckForIllegalCrossThreadCalls = false;
@@ -66,6 +68,24 @@ namespace server
 
                     richTextBox_info.AppendText("Started listening on port: " + serverPort + "\n");
                     richTextBox_info.ScrollToCaret();
+                    string givenFilename = textBox_clients.Text;
+                    if (givenFilename == filename)
+                    {
+                        string[] lines = File.ReadAllLines(filename, Encoding.UTF8);
+                        for (int i = 0; i < lines.Length; i++)
+                        {
+                            if (i % 2 == 0)
+                            {
+                                questions.Add(lines[i]);
+                            }
+                            else
+                            {
+                                answers.Add(Int32.Parse(lines[i]));
+
+                            }
+                        }
+
+                    }
                     Int32.TryParse(textBox_num.Text, out numOfQuestions); // we got the number of questions as input
                 }
                 else
@@ -147,6 +167,26 @@ namespace server
                 }
             }
         }
+
+        struct ClientAnswer
+        {
+            public string name;
+            public int answer;
+
+            public ClientAnswer(string name, int answer)
+            {
+                this.name = name;
+                this.answer = answer;
+            }
+        }
+
+        List<ClientAnswer> clientsAnswers = new List<ClientAnswer>();
+        List<ClientAnswer> tempList = new List<ClientAnswer>();
+
+
+        double scorePlayer1 = 0; 
+        double scorePlayer2 = 0;
+
         private void Receive() 
         {
             bool connected = true;
@@ -155,12 +195,25 @@ namespace server
             Socket thisClient = clientSocketDict[name]; // we got the socket that related to the username
             int numOfQuestionsAsked = 0;
 
-            while (connected && !terminating) 
+
+            while (connected && !terminating && !isGameFinished) 
             {
                 if (!isQuestionAsked && isGameStarted)
                 {
                     if (numOfQuestionsAsked == numOfQuestions)
                     {
+                        foreach (string clientName in connectedUsers)
+                        {
+                            send_message(clientSocketDict[clientName], "Game is over! Congratulations... Final scores:\n");
+                            if (scorePlayer1 < scorePlayer2)
+                            {
+                                send_message(clientSocketDict[clientName], connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + ": " + scorePlayer1 + "\n");
+                            }
+                            else
+                            {
+                                send_message(clientSocketDict[clientName], connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n");
+                            }
+                        }
                         isGameFinished = true; 
                     }
                     else {
@@ -176,30 +229,70 @@ namespace server
                     try 
                     {
                         string incomingMessage = receiveOneMessage(thisClient); // if there are any messages we take them
+                        Thread.Sleep(500);
+                        ClientAnswer pair = new ClientAnswer(name, Int32.Parse(incomingMessage));
+                        if (pair.name == connectedUsers[0] && clientsAnswers.Count() == 0 && tempList.Count() == 0)
+                            clientsAnswers.Add(pair);
+                        else if (pair.name == connectedUsers[1] && clientsAnswers.Count() == 1)
+                            clientsAnswers.Add(pair);
+                        else if (pair.name == connectedUsers[1] && clientsAnswers.Count() == 0)
+                            tempList.Add(pair);
+                        else if (pair.name == connectedUsers[0] && tempList.Count() == 1)
+                        {
+                            clientsAnswers.Add(pair);
+                            clientsAnswers.Add(tempList[0]);
+                        }
+                            
                         richTextBox_info.AppendText(name + ": " + incomingMessage + "\n");
                         if (isGameStarted)
                         {
                             numAnswers += 1;
                             if (numAnswers == clientSocketDict.Count)
                             {
+                                int correctAnswer = answers[numOfQuestionsAsked];
+                                int diffAnswer1 = Math.Abs(correctAnswer - clientsAnswers[0].answer);
+                                int diffAnswer2 = Math.Abs(correctAnswer - clientsAnswers[1].answer);
+                                if (diffAnswer1 < diffAnswer2)
+                                {
+                                    scorePlayer1++;
+                                }
+                                else if (diffAnswer2 < diffAnswer1)
+                                {
+                                    scorePlayer2++;
+                                }
+                                else
+                                {
+                                    scorePlayer1 += 0.5;
+                                    scorePlayer2 += 0.5;
+                                }
+
+                                foreach (string clientName in connectedUsers)
+                                {
+                                    send_message(clientSocketDict[clientName], "The answer is: " + correctAnswer + "\n");
+                                    send_message(clientSocketDict[clientName], clientsAnswers[0].name + "'s answer: " + clientsAnswers[0].answer + "\n");
+                                    send_message(clientSocketDict[clientName], clientsAnswers[1].name + "'s answer: " + clientsAnswers[1].answer + "\n");
+                                    send_message(clientSocketDict[clientName], "Scores: \n");
+                                    if (scorePlayer1 < scorePlayer2)
+                                    {
+                                        send_message(clientSocketDict[clientName], connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + ": " + scorePlayer1 + "\n");
+                                    }
+                                    else
+                                    {
+                                        send_message(clientSocketDict[clientName], connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n");
+                                    }
+                                }
+
                                 isQuestionAsked = false;
                                 numAnswers = 0;
-                                numOfQuestionsAsked += 1; 
+                                numOfQuestionsAsked += 1;
+                                clientsAnswers.Clear();
+                                tempList.Clear();
                             }
-                        }
-                        //foreach (string clientName in connectedUsers)
-                        //{ 
-                        //    if (clientName != name) // check for to do not send it to sender client
-                        //    { 
-                        //        Socket tempSocket = clientSocketDict[clientName]; // we got the socket
-                        //        string incomingMessageOther = receiveOneMessage(tempSocket); // if there are any messages we take them
-                        //        richTextBox_info.AppendText(name + ": " + incomingMessageOther + "\n");
-                        //        numAnswers += 1;
-                        //    }
-                        //} 
+                        }   
                     }
                     catch
                     {
+                        //richTextBox_info.AppendText(ex.ToString());
                         flag = true;
                         foreach (string clientName in connectedUsers)
                         {
