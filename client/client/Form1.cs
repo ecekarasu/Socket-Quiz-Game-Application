@@ -64,6 +64,8 @@ namespace client
                             {
                                 button_connect.Enabled = false;
                                 connected = true;
+                                //button_disconnect.Enabled = true;
+                                //button_submit.Enabled = true;
                                 button_connect.Text = "Connected";
                                 button_connect.BackColor = System.Drawing.Color.Green;
                                 logs.AppendText("Connection established...\n");
@@ -151,6 +153,16 @@ namespace client
                 logs.ScrollToCaret();
             }
         }
+
+        private void button_disconnect_Click(object sender, EventArgs e)
+        {
+
+            logs.AppendText("You have disconnected.\n");
+            button_connect.Enabled = true;
+            connected = false;
+            clientSocket.Close();
+        }
+
         private void Form1_FormClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             connected = false;

@@ -28,6 +28,8 @@ namespace server
         bool isGameStarted = false;
         bool isGameFinished = false;
         int numOfQuestions = 0;
+        int numOfQuestionsAsked = 0;
+        int numOfQuestionsControl = 0;
         int numAnswers = 0;
         bool isQuestionAsked = false;
         string filename = "questions.txt"; 
@@ -130,6 +132,7 @@ namespace server
                                 send_message(clientSocketDict[clientName], "THE GAME IS STARTED\n");
                                 isGameStarted = true;
                             }
+                            richTextBox_info.AppendText("THE GAME IS STARTED\n");
                             Thread.Sleep(500);
                         }
                         Thread receiveThread = new Thread(Receive);
@@ -193,35 +196,67 @@ namespace server
             bool flag = false;
             string name = connectedUsers[clientSocketDict.Count - 1]; // we got the username
             Socket thisClient = clientSocketDict[name]; // we got the socket that related to the username
-            int numOfQuestionsAsked = 0;
+
 
 
             while (connected && !terminating && !isGameFinished) 
             {
                 if (!isQuestionAsked && isGameStarted)
                 {
-                    if (numOfQuestionsAsked == numOfQuestions)
+                    if (numOfQuestionsControl == numOfQuestions)
                     {
                         foreach (string clientName in connectedUsers)
                         {
                             send_message(clientSocketDict[clientName], "Game is over! Congratulations... Final scores:\n");
+                            
                             if (scorePlayer1 < scorePlayer2)
                             {
-                                send_message(clientSocketDict[clientName], connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + ": " + scorePlayer1 + "\n");
+                                send_message(clientSocketDict[clientName], connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + " won the game!\n");
+                                
+                            }
+                            else if (scorePlayer2 < scorePlayer1)
+                            {
+                                send_message(clientSocketDict[clientName], connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + " won the game!\n");
+                                
                             }
                             else
                             {
-                                send_message(clientSocketDict[clientName], connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n");
+                                send_message(clientSocketDict[clientName], connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n" + "It's a draw!\n");
                             }
+
+                        }
+                        richTextBox_info.AppendText("Game is over! Congratulations... Final scores:\n");
+                        if (scorePlayer1 < scorePlayer2)
+                        {
+                            richTextBox_info.AppendText(connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + " won the game!\n");
+                        }
+                        else if (scorePlayer2 < scorePlayer1)
+                        {
+                            richTextBox_info.AppendText(connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + " won the game!\n");
+                        }
+                        else
+                        {
+                            richTextBox_info.AppendText(connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n" + "It's a draw!");
                         }
                         isGameFinished = true; 
+
                     }
                     else {
                         Thread.Sleep(500);
                         foreach (string clientName in connectedUsers)
                         {
-                            send_message(clientSocketDict[clientName], "Question is: " + questions[numOfQuestionsAsked] + "\n");
+                            if (numOfQuestionsAsked < questions.Count())
+                            {
+                                send_message(clientSocketDict[clientName], "Question is: " + questions[numOfQuestionsAsked] + "\n");
+                            }
+                            else
+                            {
+                                numOfQuestionsAsked = numOfQuestionsAsked % questions.Count();
+                                send_message(clientSocketDict[clientName], "Question is: " + questions[numOfQuestionsAsked] + "\n");
+                            }
+
                         }
+                        richTextBox_info.AppendText("Question is: " + questions[numOfQuestionsAsked] + "\n");
                         isQuestionAsked = true;
                     }
                 }
@@ -270,21 +305,33 @@ namespace server
                                 {
                                     send_message(clientSocketDict[clientName], "The answer is: " + correctAnswer + "\n");
                                     send_message(clientSocketDict[clientName], clientsAnswers[0].name + "'s answer: " + clientsAnswers[0].answer + "\n");
+                                    
                                     send_message(clientSocketDict[clientName], clientsAnswers[1].name + "'s answer: " + clientsAnswers[1].answer + "\n");
+                                    
                                     send_message(clientSocketDict[clientName], "Scores: \n");
+                                    
                                     if (scorePlayer1 < scorePlayer2)
                                     {
                                         send_message(clientSocketDict[clientName], connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + ": " + scorePlayer1 + "\n");
+                                        
                                     }
                                     else
                                     {
                                         send_message(clientSocketDict[clientName], connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n");
+                                       
                                     }
                                 }
+                                richTextBox_info.AppendText("The answer is: " + correctAnswer + "\n");
+                                richTextBox_info.AppendText("Scores: \n");
+                                if (scorePlayer1 < scorePlayer2)
+                                    richTextBox_info.AppendText(connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + ": " + scorePlayer1 + "\n");
+                                else
+                                    richTextBox_info.AppendText(connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n");
 
                                 isQuestionAsked = false;
                                 numAnswers = 0;
                                 numOfQuestionsAsked += 1;
+                                numOfQuestionsControl++;
                                 clientsAnswers.Clear();
                                 tempList.Clear();
                             }
@@ -311,6 +358,9 @@ namespace server
                     }
                 }
             }
+
+            //end of while loop
+
             if (!connected && !flag)
             {
                 foreach (string clientName in connectedUsers)
@@ -325,6 +375,12 @@ namespace server
                 connectedUsers.Remove(name);
                 clientSocketDict.Remove(name);
             }
+
+            richTextBox_info.AppendText(name + " has disconnected\n");
+            thisClient.Close();
+            connectedUsers.Remove(name);
+            clientSocketDict.Remove(name);
+
         }
         private bool checkClient(Socket thisClient, ref string name)
         {
