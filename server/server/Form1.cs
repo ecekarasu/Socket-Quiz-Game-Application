@@ -157,8 +157,11 @@ namespace server
 
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             while (connected && !terminating) 
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
             while (connected && !terminating && !isGameFinished) 
@@ -183,6 +186,7 @@ namespace server
                     try 
                     {
                         string incomingMessage = receiveOneMessage(thisClient); // if there are any messages we take them
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
                         richTextBox_info.AppendText(name + ": " + incomingMessage + "\n");
@@ -232,6 +236,33 @@ namespace server
                             richTextBox_info.AppendText(name + ": " + incomingMessage + "\n");
                             if (isGameStarted)
                             {
+=======
+                        if (incomingMessage == "-DISCONNECT-")
+                        {
+                            connected = false;
+                            richTextBox_info.AppendText(name + " has disconnected\n");
+                            richTextBox_info.ScrollToCaret();
+                        }
+                        else
+                        { 
+                            Thread.Sleep(500);
+                            ClientAnswer pair = new ClientAnswer(name, Int32.Parse(incomingMessage));
+                            if (pair.name == connectedUsers[0] && clientsAnswers.Count() == 0 && tempList.Count() == 0)
+                                clientsAnswers.Add(pair);
+                            else if (pair.name == connectedUsers[1] && clientsAnswers.Count() == 1)
+                                clientsAnswers.Add(pair);
+                            else if (pair.name == connectedUsers[1] && clientsAnswers.Count() == 0)
+                                tempList.Add(pair);
+                            else if (pair.name == connectedUsers[0] && tempList.Count() == 1)
+                            {
+                                clientsAnswers.Add(pair);
+                                clientsAnswers.Add(tempList[0]);
+                            }
+                            
+                            richTextBox_info.AppendText(name + ": " + incomingMessage + "\n");
+                            if (isGameStarted)
+                            {
+>>>>>>> Stashed changes
 =======
                         if (incomingMessage == "-DISCONNECT-")
                         {
@@ -316,6 +347,9 @@ namespace server
                             }
                         }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes

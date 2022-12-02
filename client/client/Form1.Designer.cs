@@ -41,6 +41,10 @@
             this.button_submit = new System.Windows.Forms.Button();
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+            this.button_disconnect = new System.Windows.Forms.Button();
+>>>>>>> Stashed changes
 =======
             this.button_disconnect = new System.Windows.Forms.Button();
 >>>>>>> Stashed changes
@@ -137,7 +141,12 @@
             // 
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             this.button_submit.Location = new System.Drawing.Point(230, 123);
+=======
+            this.button_submit.Enabled = false;
+            this.button_submit.Location = new System.Drawing.Point(230, 117);
+>>>>>>> Stashed changes
 =======
             this.button_submit.Enabled = false;
             this.button_submit.Location = new System.Drawing.Point(230, 117);
@@ -171,6 +180,10 @@
             this.ClientSize = new System.Drawing.Size(377, 407);
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+            this.Controls.Add(this.button_disconnect);
+>>>>>>> Stashed changes
 =======
             this.Controls.Add(this.button_disconnect);
 >>>>>>> Stashed changes
@@ -210,6 +223,10 @@
         private System.Windows.Forms.Button button_submit;
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+        private System.Windows.Forms.Button button_disconnect;
+>>>>>>> Stashed changes
 =======
         private System.Windows.Forms.Button button_disconnect;
 >>>>>>> Stashed changes
