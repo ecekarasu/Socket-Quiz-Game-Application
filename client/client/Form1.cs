@@ -42,6 +42,7 @@ namespace client
 
         private void button_connect_Click(object sender, EventArgs e)
         {
+            terminating = false; // to connect after disconnect
             clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             string IP = textBox_ip.Text;
             int portNum;
@@ -63,21 +64,10 @@ namespace client
                             {
                                 button_connect.Enabled = false;
                                 connected = true;
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
+
                                 button_disconnect.Enabled = true;
                                 button_submit.Enabled = true;
->>>>>>> Stashed changes
-=======
-                                button_disconnect.Enabled = true;
-                                button_submit.Enabled = true;
->>>>>>> Stashed changes
-=======
-                                button_disconnect.Enabled = true;
-                                button_submit.Enabled = true;
->>>>>>> Stashed changes
+
                                 button_connect.Text = "Connected";
                                 button_connect.BackColor = System.Drawing.Color.Green;
                                 logs.AppendText("Connection established...\n");
@@ -140,9 +130,8 @@ namespace client
                 {
                     if (!terminating)
                     {
-                        clientSocket.Disconnect(true);
                         logs.AppendText("The server has disconnected\n");
-                        logs.ScrollToCaret(); 
+                        logs.ScrollToCaret();
                     }
                     clientSocket.Close();
                     connected = false;
@@ -166,11 +155,10 @@ namespace client
                 logs.ScrollToCaret();
             }
         }
-<<<<<<< Updated upstream
-=======
 
         private void button_disconnect_Click(object sender, EventArgs e)
         {
+
             send_message("-DISCONNECT-");
             button_connect.Enabled = true;
             button_disconnect.Enabled = false;
@@ -178,10 +166,8 @@ namespace client
             button_connect.Text = "connect";
             connected = false;
             clientSocket.Disconnect(false);
-            //clientSocket.Close();
         }
 
->>>>>>> Stashed changes
         private void Form1_FormClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             connected = false;

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace server
 {
@@ -19,16 +20,19 @@ namespace server
         Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         List<string> connectedUsers = new List<string>(); // keeps the names of connected users
         Dictionary<string, Socket> clientSocketDict = new Dictionary<string, Socket>(); // keeps name -> client tuples
-        List<string> questions = new List<string>() {"q1", "q2", "q3"}; // DUMMY
-        List<int> answers = new List<int>() {1, 2, 3}; // DUMMY
+        List<string> questions = new List<string>();
+        List<int> answers = new List<int>();
 
         bool terminating = false;
         bool listening = false;
         bool isGameStarted = false;
         bool isGameFinished = false;
         int numOfQuestions = 0;
+        int numOfQuestionsAsked = 0;
+        int numOfQuestionsControl = 0;
         int numAnswers = 0;
-        bool isQuestionAsked = false; 
+        bool isQuestionAsked = false;
+        string filename = "questions.txt";
         public Form1()
         {
             Control.CheckForIllegalCrossThreadCalls = false;
@@ -66,6 +70,24 @@ namespace server
 
                     richTextBox_info.AppendText("Started listening on port: " + serverPort + "\n");
                     richTextBox_info.ScrollToCaret();
+                    string givenFilename = textBox_clients.Text;
+                    if (givenFilename == filename)
+                    {
+                        string[] lines = File.ReadAllLines(filename, Encoding.UTF8);
+                        for (int i = 0; i < lines.Length; i++)
+                        {
+                            if (i % 2 == 0)
+                            {
+                                questions.Add(lines[i]);
+                            }
+                            else
+                            {
+                                answers.Add(Int32.Parse(lines[i]));
+
+                            }
+                        }
+
+                    }
                     Int32.TryParse(textBox_num.Text, out numOfQuestions); // we got the number of questions as input
                 }
                 else
@@ -110,6 +132,7 @@ namespace server
                                 send_message(clientSocketDict[clientName], "THE GAME IS STARTED\n");
                                 isGameStarted = true;
                             }
+                            richTextBox_info.AppendText("THE GAME IS STARTED\n");
                             Thread.Sleep(500);
                         }
                         Thread receiveThread = new Thread(Receive);
@@ -147,70 +170,102 @@ namespace server
                 }
             }
         }
-        private void Receive() 
+
+        struct ClientAnswer
+        {
+            public string name;
+            public int answer;
+
+            public ClientAnswer(string name, int answer)
+            {
+                this.name = name;
+                this.answer = answer;
+            }
+        }
+
+        List<ClientAnswer> clientsAnswers = new List<ClientAnswer>();
+        List<ClientAnswer> tempList = new List<ClientAnswer>();
+
+
+        double scorePlayer1 = 0;
+        double scorePlayer2 = 0;
+
+        private void Receive()
         {
             bool connected = true;
             bool flag = false;
             string name = connectedUsers[clientSocketDict.Count - 1]; // we got the username
             Socket thisClient = clientSocketDict[name]; // we got the socket that related to the username
-            int numOfQuestionsAsked = 0;
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-            while (connected && !terminating) 
-=======
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-            while (connected && !terminating && !isGameFinished) 
->>>>>>> Stashed changes
+
+
+            //while (connected && !terminating && !isGameFinished)
+            while (connected && !terminating )
             {
                 if (!isQuestionAsked && isGameStarted)
                 {
-                    if (numOfQuestionsAsked == numOfQuestions)
+                    if (numOfQuestionsControl == numOfQuestions)
                     {
-                        isGameFinished = true; 
+                        foreach (string clientName in connectedUsers)
+                        {
+                            send_message(clientSocketDict[clientName], "Game is over! Congratulations... Final scores:\n");
+                            
+                            if (scorePlayer1 < scorePlayer2)
+                            {
+                                send_message(clientSocketDict[clientName], connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + " won the game!\n");
+                                
+                            }
+                            else if (scorePlayer2 < scorePlayer1)
+                            {
+                                send_message(clientSocketDict[clientName], connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + " won the game!\n");
+                                
+                            }
+                            else
+                            {
+                                send_message(clientSocketDict[clientName], connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n" + "It's a draw!\n");
+                            }
+
+                        }
+                        richTextBox_info.AppendText("Game is over! Congratulations... Final scores:\n");
+                        if (scorePlayer1 < scorePlayer2)
+                        {
+                            richTextBox_info.AppendText(connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + " won the game!\n");
+                        }
+                        else if (scorePlayer2 < scorePlayer1)
+                        {
+                            richTextBox_info.AppendText(connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + " won the game!\n");
+                        }
+                        else
+                        {
+                            richTextBox_info.AppendText(connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n" + "It's a draw!");
+                        }
+                        isGameFinished = true;
+
                     }
                     else {
                         Thread.Sleep(500);
                         foreach (string clientName in connectedUsers)
                         {
-                            send_message(clientSocketDict[clientName], "Question is: " + questions[numOfQuestionsAsked] + "\n");
+                            if (numOfQuestionsAsked < questions.Count())
+                            {
+                                send_message(clientSocketDict[clientName], "Question is: " + questions[numOfQuestionsAsked] + "\n");
+                            }
+                            else
+                            {
+                                numOfQuestionsAsked = numOfQuestionsAsked % questions.Count();
+                                send_message(clientSocketDict[clientName], "Question is: " + questions[numOfQuestionsAsked] + "\n");
+                            }
+
                         }
+                        richTextBox_info.AppendText("Question is: " + questions[numOfQuestionsAsked] + "\n");
                         isQuestionAsked = true;
                     }
                 }
-                else { 
-                    try 
+                else {
+                    try
                     {
                         string incomingMessage = receiveOneMessage(thisClient); // if there are any messages we take them
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-                        richTextBox_info.AppendText(name + ": " + incomingMessage + "\n");
-                        if (isGameStarted)
-                        {
-                            numAnswers += 1;
-                            if (numAnswers == clientSocketDict.Count)
-                            {
-                                isQuestionAsked = false;
-                                numAnswers = 0;
-                                numOfQuestionsAsked += 1; 
-                            }
-                        }
-                        //foreach (string clientName in connectedUsers)
-                        //{ 
-                        //    if (clientName != name) // check for to do not send it to sender client
-                        //    { 
-                        //        Socket tempSocket = clientSocketDict[clientName]; // we got the socket
-                        //        string incomingMessageOther = receiveOneMessage(tempSocket); // if there are any messages we take them
-                        //        richTextBox_info.AppendText(name + ": " + incomingMessageOther + "\n");
-                        //        numAnswers += 1;
-                        //    }
-                        //} 
-=======
+                        //yeni
                         if (incomingMessage == "-DISCONNECT-")
                         {
                             connected = false;
@@ -218,7 +273,9 @@ namespace server
                             richTextBox_info.ScrollToCaret();
                         }
                         else
-                        { 
+                        {
+                            //yeni
+
                             Thread.Sleep(500);
                             ClientAnswer pair = new ClientAnswer(name, Int32.Parse(incomingMessage));
                             if (pair.name == connectedUsers[0] && clientsAnswers.Count() == 0 && tempList.Count() == 0)
@@ -232,64 +289,10 @@ namespace server
                                 clientsAnswers.Add(pair);
                                 clientsAnswers.Add(tempList[0]);
                             }
-                            
+
                             richTextBox_info.AppendText(name + ": " + incomingMessage + "\n");
                             if (isGameStarted)
                             {
-=======
-                        if (incomingMessage == "-DISCONNECT-")
-                        {
-                            connected = false;
-                            richTextBox_info.AppendText(name + " has disconnected\n");
-                            richTextBox_info.ScrollToCaret();
-                        }
-                        else
-                        { 
-                            Thread.Sleep(500);
-                            ClientAnswer pair = new ClientAnswer(name, Int32.Parse(incomingMessage));
-                            if (pair.name == connectedUsers[0] && clientsAnswers.Count() == 0 && tempList.Count() == 0)
-                                clientsAnswers.Add(pair);
-                            else if (pair.name == connectedUsers[1] && clientsAnswers.Count() == 1)
-                                clientsAnswers.Add(pair);
-                            else if (pair.name == connectedUsers[1] && clientsAnswers.Count() == 0)
-                                tempList.Add(pair);
-                            else if (pair.name == connectedUsers[0] && tempList.Count() == 1)
-                            {
-                                clientsAnswers.Add(pair);
-                                clientsAnswers.Add(tempList[0]);
-                            }
-                            
-                            richTextBox_info.AppendText(name + ": " + incomingMessage + "\n");
-                            if (isGameStarted)
-                            {
->>>>>>> Stashed changes
-=======
-                        if (incomingMessage == "-DISCONNECT-")
-                        {
-                            connected = false;
-                            richTextBox_info.AppendText(name + " has disconnected\n");
-                            richTextBox_info.ScrollToCaret();
-                        }
-                        else
-                        { 
-                            Thread.Sleep(500);
-                            ClientAnswer pair = new ClientAnswer(name, Int32.Parse(incomingMessage));
-                            if (pair.name == connectedUsers[0] && clientsAnswers.Count() == 0 && tempList.Count() == 0)
-                                clientsAnswers.Add(pair);
-                            else if (pair.name == connectedUsers[1] && clientsAnswers.Count() == 1)
-                                clientsAnswers.Add(pair);
-                            else if (pair.name == connectedUsers[1] && clientsAnswers.Count() == 0)
-                                tempList.Add(pair);
-                            else if (pair.name == connectedUsers[0] && tempList.Count() == 1)
-                            {
-                                clientsAnswers.Add(pair);
-                                clientsAnswers.Add(tempList[0]);
-                            }
-                            
-                            richTextBox_info.AppendText(name + ": " + incomingMessage + "\n");
-                            if (isGameStarted)
-                            {
->>>>>>> Stashed changes
                                 numAnswers += 1;
                                 if (numAnswers == clientSocketDict.Count)
                                 {
@@ -314,20 +317,20 @@ namespace server
                                     {
                                         send_message(clientSocketDict[clientName], "The answer is: " + correctAnswer + "\n");
                                         send_message(clientSocketDict[clientName], clientsAnswers[0].name + "'s answer: " + clientsAnswers[0].answer + "\n");
-                                    
+
                                         send_message(clientSocketDict[clientName], clientsAnswers[1].name + "'s answer: " + clientsAnswers[1].answer + "\n");
-                                    
+
                                         send_message(clientSocketDict[clientName], "Scores: \n");
-                                    
+
                                         if (scorePlayer1 < scorePlayer2)
                                         {
                                             send_message(clientSocketDict[clientName], connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + ": " + scorePlayer1 + "\n");
-                                        
+
                                         }
                                         else
                                         {
                                             send_message(clientSocketDict[clientName], connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n");
-                                       
+
                                         }
                                     }
                                     richTextBox_info.AppendText("The answer is: " + correctAnswer + "\n");
@@ -345,14 +348,7 @@ namespace server
                                     tempList.Clear();
                                 }
                             }
-                        }
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+                        }//else sonu
                     }
                     catch // if disconnected by closing the window
                     {
@@ -365,6 +361,8 @@ namespace server
                                 send_message(tempSocket, (name + " has disconnected\n"));
                             }
                         }
+
+                        //yeni
                         if (isGameStarted)
                         {
 
@@ -376,6 +374,8 @@ namespace server
                             isGameStarted = false;
                             Thread.Sleep(500);
                         }
+                        //yeni
+
                         richTextBox_info.AppendText(name + " has disconnected\n");
                         richTextBox_info.ScrollToCaret();
                         thisClient.Close();
@@ -385,22 +385,6 @@ namespace server
                     }
                 }
             }
-<<<<<<< Updated upstream
-            if (!connected && !flag)
-            {
-                foreach (string clientName in connectedUsers)
-                {
-                    if (clientName != name) // check for to don't send it to sender client
-                    {
-                        Socket tempSocket = clientSocketDict[clientName]; // we got the socket
-                        send_message(tempSocket, (name + " has disconnected\n"));
-                    }
-                }
-                thisClient.Close();
-                connectedUsers.Remove(name);
-                clientSocketDict.Remove(name);
-            }
-=======
 
             //end of while loop
 
@@ -414,6 +398,8 @@ namespace server
                         send_message(tempSocket, (name + " has disconnected\n"));
                     }
                 }
+
+                //yeni
                 if (isGameStarted)
                 {
 
@@ -428,15 +414,18 @@ namespace server
                     isGameStarted = false;
                     Thread.Sleep(500);
                 }
+                //yeni
+
                 thisClient.Close();
                 connectedUsers.Remove(name);
                 clientSocketDict.Remove(name);
             }
+
+            richTextBox_info.AppendText(name + " has disconnected\n");
             thisClient.Close();
             connectedUsers.Remove(name);
             clientSocketDict.Remove(name);
 
->>>>>>> Stashed changes
         }
         private bool checkClient(Socket thisClient, ref string name)
         {
