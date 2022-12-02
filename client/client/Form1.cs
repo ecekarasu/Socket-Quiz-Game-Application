@@ -64,6 +64,11 @@ namespace client
                                 button_connect.Enabled = false;
                                 connected = true;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+                                button_disconnect.Enabled = true;
+                                button_submit.Enabled = true;
+>>>>>>> Stashed changes
 =======
                                 button_disconnect.Enabled = true;
                                 button_submit.Enabled = true;
