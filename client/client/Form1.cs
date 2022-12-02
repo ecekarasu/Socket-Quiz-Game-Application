@@ -64,9 +64,14 @@ namespace client
                             {
                                 button_connect.Enabled = false;
                                 connected = true;
+
+                                //button_disconnect.Enabled = true;
+                                button_submit.Enabled = true;
+
                                 button_connect.Text = "Connected";
                                 button_connect.BackColor = System.Drawing.Color.Green;
                                 logs.AppendText("Connection established...\n");
+                                button_disconnect.Enabled = true;
                                 logs.ScrollToCaret();
 
                                 Thread receiveThread = new Thread(Receive);
@@ -127,9 +132,10 @@ namespace client
                     if (!terminating)
                     {
                         logs.AppendText("The server has disconnected\n");
-                        logs.ScrollToCaret(); 
+                        logs.ScrollToCaret();
                     }
                     clientSocket.Close();
+                    button_connect.Enabled = true;
                     connected = false;
                 }
             }
@@ -151,10 +157,28 @@ namespace client
                 logs.ScrollToCaret();
             }
         }
+
+        private void button_disconnect_Click(object sender, EventArgs e)
+        {
+
+            send_message("-DISCONNECT-");
+            button_connect.Enabled = true;
+            //button_disconnect.Enabled = false;
+            button_submit.Enabled = false;
+            button_connect.Text = "connect";
+            button_connect.Enabled = true;
+            button_disconnect.Enabled = false;
+            button_connect.BackColor = System.Drawing.Color.Gray;
+            connected = false;
+            logs.AppendText("You are disconnected...");
+            clientSocket.Close();
+        }
+
         private void Form1_FormClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             connected = false;
             terminating = true;
+            clientSocket.Disconnect(false);
             Environment.Exit(0);
         }
     }
