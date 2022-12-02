@@ -168,7 +168,7 @@ namespace client
             button_connect.Text = "connect";
             button_connect.Enabled = true;
             button_disconnect.Enabled = false;
-            button_connect.BackColor = System.Drawing.Color.Gray;
+            button_connect.BackColor = SystemColors.Control;
             connected = false;
             logs.AppendText("You are disconnected...");
             clientSocket.Close();
@@ -178,7 +178,7 @@ namespace client
         {
             connected = false;
             terminating = true;
-            clientSocket.Disconnect(false);
+            clientSocket.Close();
             Environment.Exit(0);
         }
     }

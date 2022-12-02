@@ -240,7 +240,12 @@ namespace server
                             richTextBox_info.AppendText(connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n" + "It's a draw!");
                         }
                         isGameFinished = true;
-                       
+                        terminating = true;
+                        listening = false;
+                        button_listen.Enabled = true;
+                        button_listen.BackColor = SystemColors.Control;
+                        button_listen.Text = "listen";
+                        
 
                     }
                     else {
@@ -370,6 +375,23 @@ namespace server
                             foreach (string clientName in connectedUsers)
                             {
                                 send_message(clientSocketDict[clientName], "since " + name + " is disconnected, you won the game\n");
+                            }
+                            if (name == connectedUsers[0])
+                            {
+                                scorePlayer1 = 0;
+                            }
+                            else
+                            {
+                                scorePlayer2 = 0;
+                            }
+                            richTextBox_info.AppendText("Scores: \n");
+                            if (scorePlayer1 < scorePlayer2)
+                            {
+                                richTextBox_info.AppendText(connectedUsers[1] + ": " + scorePlayer2 + "\n" + connectedUsers[0] + ": " + scorePlayer1 + "\n");
+                            }
+                            else
+                            {
+                                richTextBox_info.AppendText(connectedUsers[0] + ": " + scorePlayer1 + "\n" + connectedUsers[1] + ": " + scorePlayer2 + "\n");
                             }
                             isGameFinished = true;
                             isGameStarted = false;
