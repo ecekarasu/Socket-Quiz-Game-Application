@@ -39,6 +39,10 @@
             this.label4 = new System.Windows.Forms.Label();
             this.textBox_answer = new System.Windows.Forms.TextBox();
             this.button_submit = new System.Windows.Forms.Button();
+<<<<<<< Updated upstream
+=======
+            this.button_disconnect = new System.Windows.Forms.Button();
+>>>>>>> Stashed changes
             this.SuspendLayout();
             // 
             // textBox_ip
@@ -127,7 +131,12 @@
             // 
             // button_submit
             // 
+<<<<<<< Updated upstream
             this.button_submit.Location = new System.Drawing.Point(230, 123);
+=======
+            this.button_submit.Enabled = false;
+            this.button_submit.Location = new System.Drawing.Point(230, 117);
+>>>>>>> Stashed changes
             this.button_submit.Name = "button_submit";
             this.button_submit.Size = new System.Drawing.Size(100, 37);
             this.button_submit.TabIndex = 11;
@@ -135,11 +144,26 @@
             this.button_submit.UseVisualStyleBackColor = true;
             this.button_submit.Click += new System.EventHandler(this.button_submit_Click);
             // 
+            // button_disconnect
+            // 
+            this.button_disconnect.Enabled = false;
+            this.button_disconnect.Location = new System.Drawing.Point(230, 61);
+            this.button_disconnect.Name = "button_disconnect";
+            this.button_disconnect.Size = new System.Drawing.Size(100, 40);
+            this.button_disconnect.TabIndex = 12;
+            this.button_disconnect.Text = "disconnect";
+            this.button_disconnect.UseVisualStyleBackColor = true;
+            this.button_disconnect.Click += new System.EventHandler(this.button_disconnect_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(377, 407);
+<<<<<<< Updated upstream
+=======
+            this.Controls.Add(this.button_disconnect);
+>>>>>>> Stashed changes
             this.Controls.Add(this.button_submit);
             this.Controls.Add(this.textBox_answer);
             this.Controls.Add(this.label4);
@@ -171,6 +195,10 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textBox_answer;
         private System.Windows.Forms.Button button_submit;
+<<<<<<< Updated upstream
+=======
+        private System.Windows.Forms.Button button_disconnect;
+>>>>>>> Stashed changes
     }
 }
 
