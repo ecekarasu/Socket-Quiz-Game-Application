@@ -1,0 +1,18 @@
+C:\SUEDA-win\Projects\CS 408\step2_server\step2_server\bin\Debug\step2_server.exe.config
+C:\SUEDA-win\Projects\CS 408\step2_server\step2_server\obj\Debug\step2_server.csprojResolveAssemblyReference.cache
+C:\SUEDA-win\Projects\CS 408\step2_server\step2_server\obj\Debug\step2_server.Form1.resources
+C:\SUEDA-win\Projects\CS 408\step2_server\step2_server\obj\Debug\step2_server.Properties.Resources.resources
+C:\SUEDA-win\Projects\CS 408\step2_server\step2_server\obj\Debug\step2_server.csproj.GenerateResource.Cache
+C:\SUEDA-win\Projects\CS 408\step2_server\step2_server\bin\Debug\step2_server.exe
+C:\SUEDA-win\Projects\CS 408\step2_server\step2_server\bin\Debug\step2_server.pdb
+C:\SUEDA-win\Projects\CS 408\step2_server\step2_server\obj\Debug\step2_server.exe
+C:\SUEDA-win\Projects\CS 408\step2_server\step2_server\obj\Debug\step2_server.pdb
+C:\Users\user\Desktop\proje\step2_server\step2_server\bin\Debug\step2_server.exe.config
+C:\Users\user\Desktop\proje\step2_server\step2_server\obj\Debug\step2_server.exe
+C:\Users\user\Desktop\proje\step2_server\step2_server\obj\Debug\step2_server.pdb
+C:\Users\user\Desktop\proje\step2_server\step2_server\obj\Debug\step2_server.csprojResolveAssemblyReference.cache
+C:\Users\user\Desktop\proje\step2_server\step2_server\obj\Debug\step2_server.Form1.resources
+C:\Users\user\Desktop\proje\step2_server\step2_server\obj\Debug\step2_server.Properties.Resources.resources
+C:\Users\user\Desktop\proje\step2_server\step2_server\obj\Debug\step2_server.csproj.GenerateResource.Cache
+C:\Users\user\Desktop\proje\step2_server\step2_server\bin\Debug\step2_server.exe
+C:\Users\user\Desktop\proje\step2_server\step2_server\bin\Debug\step2_server.pdb

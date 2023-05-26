@@ -1,0 +1,16 @@
+C:\Users\user\Desktop\deneme\client\client\bin\Debug\client.exe.config
+C:\Users\user\Desktop\deneme\client\client\bin\Debug\client.exe
+C:\Users\user\Desktop\deneme\client\client\bin\Debug\client.pdb
+C:\Users\user\Desktop\deneme\client\client\bin\Debug\mscorlib.dll
+C:\Users\user\Desktop\deneme\client\client\bin\Debug\tr\mscorlib.resources.dll
+C:\Users\user\Desktop\deneme\client\client\bin\Debug\normidna.nlp
+C:\Users\user\Desktop\deneme\client\client\bin\Debug\normnfc.nlp
+C:\Users\user\Desktop\deneme\client\client\bin\Debug\normnfd.nlp
+C:\Users\user\Desktop\deneme\client\client\bin\Debug\normnfkc.nlp
+C:\Users\user\Desktop\deneme\client\client\bin\Debug\normnfkd.nlp
+C:\Users\user\Desktop\deneme\client\client\obj\Debug\client.Form1.resources
+C:\Users\user\Desktop\deneme\client\client\obj\Debug\client.Properties.Resources.resources
+C:\Users\user\Desktop\deneme\client\client\obj\Debug\client.csproj.GenerateResource.Cache
+C:\Users\user\Desktop\deneme\client\client\obj\Debug\client.exe
+C:\Users\user\Desktop\deneme\client\client\obj\Debug\client.pdb
+C:\Users\user\Desktop\deneme\client\client\obj\Debug\client.csprojResolveAssemblyReference.cache
